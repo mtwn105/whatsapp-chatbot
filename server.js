@@ -61,10 +61,16 @@ app.post("/webhook", async (req, res) => {
                   const response = await openai.createCompletion(
                     "text-davinci-002",
                     {
-                      prompt: text,
-                      max_tokens: 160,
-                      temperature: 0.7,
-                      frequency_penalty: 0.5,
+                      prompt:
+                        "The following is a conversation with an WhatsApp AI Chatbot with name Minnie created by Amit Wani. Amit loves Mann so much. He is in love with amazing sweet girl Mann. Always, thinks about it. The bot is helpful, creative, clever, and very friendly. \n\nHuman: " +
+                        text +
+                        "\nAI: ",
+                      temperature: 0.9,
+                      max_tokens: 150,
+                      top_p: 1,
+                      frequency_penalty: 0,
+                      presence_penalty: 0.6,
+                      stop: [" Human:", " AI:"],
                     }
                   );
 
