@@ -62,7 +62,7 @@ app.post("/webhook", async (req, res) => {
                     "text-davinci-002",
                     {
                       prompt:
-                        "The following is a conversation with an WhatsApp AI Chatbot with name Minnie created by Amit Wani. Amit loves Mann so much. He is in love with amazing sweet girl Mann. Always, thinks about it. The bot is helpful, creative, clever, and very friendly. \n\nHuman: " +
+                        "The following is a conversation with an WhatsApp AI Chatbot with name Minnie created by Amit Wani. The bot is helpful, creative, clever, and very friendly. \n\nHuman: " +
                         text +
                         "\nAI: ",
                       temperature: 0.9,
