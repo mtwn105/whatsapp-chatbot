@@ -1,6 +1,8 @@
 const express = require("express");
 const morgan = require("morgan");
 const helmet = require("helmet");
+const axios = require("axios").default;
+const { Configuration, OpenAIApi } = require("openai");
 
 require("dotenv").config();
 
@@ -10,52 +12,105 @@ app.use(morgan("dev"));
 app.use(helmet());
 app.use(express.json());
 
+const configuration = new Configuration({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+const openai = new OpenAIApi(configuration);
+
 // Accepts POST requests at /webhook endpoint
-app.post("/webhook", (req, res) => {
-  // Parse the request body from the POST
-  let body = req.body;
+app.post("/webhook", async (req, res) => {
+  try {
+    // Parse the request body from the POST
+    let body = req.body;
 
-  // Check the Incoming webhook message
-  console.log("Incoming webhook: " + JSON.stringify(req.body));
+    // Check the Incoming webhook message
+    console.log("Incoming webhook: " + JSON.stringify(req.body));
 
-  // Validate the webhook
-  if (req.body.object) {
-    // Handle the event
-    if (req.body.object === "whatsapp_business_account") {
-      const entry = req.body.entry[0];
+    // Validate the webhook
+    if (req.body.object) {
+      // Handle the event
+      if (req.body.object === "whatsapp_business_account") {
+        const entry = req.body.entry[0];
 
-      // Handle the message
-      if (entry.changes) {
-        entry.changes.forEach((change) => {
-          if (change.value && change.field === "messages") {
-            // Handle the value
-            const value = change.value;
+        // Handle the message
+        if (entry.changes) {
+          for (const change of entry.changes) {
+            if (
+              change.value &&
+              change.field === "messages" &&
+              change.value.contacts &&
+              change.value.messages
+            ) {
+              // Handle the value
+              const value = change.value;
 
-            const userName = value.contacts[0].profile.name;
+              const userName = value.contacts[0].profile.name;
 
-            const messages = value.messages;
+              const messages = value.messages;
 
-            // Handle messages
-            messages.forEach((message) => {
-              if (
-                message.type === "text" &&
-                message.text &&
-                message.text.body
-              ) {
-                const waid = message.from;
-                const text = message.text.body;
-                console.log("Message from " + waid + ": " + text);
+              // Handle messages
+              for (const message of messages) {
+                if (
+                  message.type === "text" &&
+                  message.text &&
+                  message.text.body
+                ) {
+                  const waid = message.from;
+                  const text = message.text.body;
+                  console.log("Message from " + waid + ": " + text);
+                  const response = await openai.createCompletion(
+                    "text-davinci-002",
+                    {
+                      prompt: text,
+                      max_tokens: 160,
+                      temperature: 0.7,
+                      frequency_penalty: 0.5,
+                    }
+                  );
+
+                  let reply = "";
+
+                  for (const result of response.data.choices) {
+                    reply += result.text + "\n";
+                  }
+
+                  console.log("Replying to " + waid + ": " + reply);
+
+                  // Send reply to user
+
+                  const sendMessageResponse = await axios.post(
+                    process.env.WHATSAPP_SEND_MESSAGE_API,
+                    {
+                      messaging_product: "whatsapp",
+                      recipient_type: "individual",
+                      to: waid,
+                      type: "text",
+                      text: {
+                        preview_url: false,
+                        body: reply,
+                      },
+                    },
+                    {
+                      headers: {
+                        Authorization: "Bearer " + process.env.WHATSAPP_TOKEN,
+                      },
+                    }
+                  );
+                }
               }
-            });
+            }
           }
-        });
+        }
       }
-    }
 
-    res.sendStatus(200);
-  } else {
-    // Return a '404 Not Found' if event is not from a whatsApp API
-    res.sendStatus(404);
+      res.sendStatus(200);
+    } else {
+      // Return a '404 Not Found' if event is not from a whatsApp API
+      res.sendStatus(404);
+    }
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
   }
 });
 
