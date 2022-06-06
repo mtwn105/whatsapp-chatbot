@@ -1,8 +1,8 @@
 const express = require("express");
 const morgan = require("morgan");
 const helmet = require("helmet");
+const cors = require("cors");
 const axios = require("axios").default;
-const { Configuration, OpenAIApi } = require("openai");
 
 require("dotenv").config();
 
@@ -10,21 +10,17 @@ const app = express();
 
 app.use(morgan("dev"));
 app.use(helmet());
+app.use(cors());
 app.use(express.json());
 
-const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-const openai = new OpenAIApi(configuration);
-
 // Accepts POST requests at /webhook endpoint
-app.post("/webhook", async (req, res) => {
+app.post("/api/webhook", async (req, res) => {
   try {
     // Parse the request body from the POST
-    let body = req.body;
+    const body = req.body;
 
     // Check the Incoming webhook message
-    console.log("Incoming webhook: " + JSON.stringify(req.body));
+    console.log("Incoming webhook: " + JSON.stringify(body));
 
     // Validate the webhook
     if (req.body.object) {
@@ -57,51 +53,65 @@ app.post("/webhook", async (req, res) => {
                 ) {
                   const waid = message.from;
                   const text = message.text.body;
-                  console.log("Message from " + waid + ": " + text);
-                  const response = await openai.createCompletion(
-                    "text-davinci-002",
-                    {
-                      prompt:
-                        "The following is a conversation with an WhatsApp AI Chatbot with name Minnie created by Amit Wani. The bot is helpful, creative, clever, and very friendly. \n\nHuman: " +
-                        text +
-                        "\nAI: ",
-                      temperature: 0.9,
-                      max_tokens: 150,
-                      top_p: 1,
-                      frequency_penalty: 0,
-                      presence_penalty: 0.6,
-                      stop: [" Human:", " AI:"],
-                    }
+                  console.log(
+                    "Message from " + waid + " - " + userName + ": " + text
                   );
 
                   let reply = "";
 
-                  for (const result of response.data.choices) {
-                    reply += result.text + "\n";
+                  try {
+                    const chatbotResponse = await axios.post(
+                      process.env.CHATBOT_URL,
+                      {
+                        message: text,
+                      },
+                      {
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                      }
+                    );
+
+                    reply = chatbotResponse.data.reply;
+                  } catch (chatbotError) {
+                    console.error(
+                      "Error while receiving message from Chatbot: " +
+                        chatbotError
+                    );
+
+                    reply =
+                      "Sorry, I am not able to reply to your message right now. Please try again later.";
                   }
 
                   console.log("Replying to " + waid + ": " + reply);
 
                   // Send reply to user
 
-                  const sendMessageResponse = await axios.post(
-                    process.env.WHATSAPP_SEND_MESSAGE_API,
-                    {
-                      messaging_product: "whatsapp",
-                      recipient_type: "individual",
-                      to: waid,
-                      type: "text",
-                      text: {
-                        preview_url: false,
-                        body: reply,
+                  try {
+                    await axios.post(
+                      process.env.WHATSAPP_SEND_MESSAGE_API,
+                      {
+                        messaging_product: "whatsapp",
+                        recipient_type: "individual",
+                        to: waid,
+                        type: "text",
+                        text: {
+                          preview_url: false,
+                          body: reply,
+                        },
                       },
-                    },
-                    {
-                      headers: {
-                        Authorization: "Bearer " + process.env.WHATSAPP_TOKEN,
-                      },
-                    }
-                  );
+                      {
+                        headers: {
+                          Authorization: "Bearer " + process.env.WHATSAPP_TOKEN,
+                        },
+                      }
+                    );
+                  } catch (whatsappSendError) {
+                    console.error(
+                      "Error while sending message to whatsapp: " +
+                        whatsappSendError
+                    );
+                  }
                 }
               }
             }
@@ -121,7 +131,7 @@ app.post("/webhook", async (req, res) => {
 });
 
 // Accepts GET requests at the /webhook endpoint. You need this URL to setup webhook initially.
-app.get("/webhook", (req, res) => {
+app.get("/api/webhook", (req, res) => {
   const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
 
   // Parse params from the webhook verification request
@@ -146,6 +156,6 @@ app.get("/webhook", (req, res) => {
 });
 
 // Sets server port and logs message on success
-app.listen(process.env.PORT || 3000, () =>
-  console.log("Whatsapp Chatbot is listening")
+app.listen(process.env.PORT || 8081, () =>
+  console.log("Whatsapp Connector is listening")
 );
