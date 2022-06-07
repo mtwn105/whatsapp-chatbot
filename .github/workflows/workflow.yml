@@ -7,11 +7,8 @@ on:
     branches: [ "main" ]
 
 jobs:
-
-  build:
-
+  docker-build:
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -20,7 +17,6 @@ jobs:
       with:
         username: ${{secrets.DOCKERHUB_USERNAME }}
         password: ${{secrets.DOCKERHUB_TOKEN }}
-        
     - name: Docker Build and Push
       run: |
         docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_CHATBOT_REPOSITORY }}:${{ github.sha }} -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_CHATBOT_REPOSITORY }}:latest ./chatbot/
@@ -29,3 +25,16 @@ jobs:
         docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_WHATSAPP_CONNECTOR_REPOSITORY }}:${{ github.sha }}
         docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_CHATBOT_REPOSITORY }}:latest
         docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_WHATSAPP_CONNECTOR_REPOSITORY }}:latest
+  linode-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: multiple command
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.LINODE_SERVER_HOST }}
+        username: ${{ secrets.LINODE_SERVER_USERNAME }}
+        key: ${{ secrets.LINODE_SSH_KEY }}
+        script: |
+          whoami
+          ls -al
+    
