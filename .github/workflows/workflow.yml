@@ -26,6 +26,7 @@ jobs:
         docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_CHATBOT_REPOSITORY }}:latest
         docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_WHATSAPP_CONNECTOR_REPOSITORY }}:latest
   linode-deploy:
+    needs: [docker-build]
     runs-on: ubuntu-latest
     steps:
     - name: multiple command
