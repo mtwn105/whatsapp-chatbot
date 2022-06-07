@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  docker-build:
+  build:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
@@ -25,17 +25,16 @@ jobs:
         docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_WHATSAPP_CONNECTOR_REPOSITORY }}:${{ github.sha }}
         docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_CHATBOT_REPOSITORY }}:latest
         docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_WHATSAPP_CONNECTOR_REPOSITORY }}:latest
-  linode-deploy:
-    needs: [docker-build]
+  deploy:
+    needs: [build]
     runs-on: ubuntu-latest
     steps:
-    - name: multiple command
+    - name: Docker Compose Up
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.LINODE_SERVER_HOST }}
         username: ${{ secrets.LINODE_SERVER_USERNAME }}
         key: ${{ secrets.LINODE_SSH_KEY }}
         script: |
-          whoami
-          ls -al
+          docker-compose up -d
     
