@@ -23,7 +23,9 @@ jobs:
         
     - name: Docker Build and Push
       run: |
-        docker build --tag ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_CHATBOT_REPOSITORY }}:${{ github.sha }} ./chatbot/
-        docker build --tag ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_WHATSAPP_CONNECTOR_REPOSITORY }}:${{ github.sha }} ./whatsapp-connector/
+        docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_CHATBOT_REPOSITORY }}:${{ github.sha }} -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_CHATBOT_REPOSITORY }}:latest ./chatbot/
+        docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_WHATSAPP_CONNECTOR_REPOSITORY }}:${{ github.sha }} -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_WHATSAPP_CONNECTOR_REPOSITORY }}:latest ./whatsapp-connector/
         docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_CHATBOT_REPOSITORY }}:${{ github.sha }}
         docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_WHATSAPP_CONNECTOR_REPOSITORY }}:${{ github.sha }}
+        docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_CHATBOT_REPOSITORY }}:latest
+        docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_WHATSAPP_CONNECTOR_REPOSITORY }}:latest
