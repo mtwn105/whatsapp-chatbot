@@ -18,7 +18,7 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 
-// Accepts POST requests at /webhook endpoint
+// Accepts POST requests at /message endpoint
 app.post("/api/message", async (req, res) => {
   try {
     // Parse the request body from the POST
