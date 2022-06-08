@@ -207,3 +207,5 @@ chatbot/.dynamodb/
 
 # TernJS port file
 chatbot/.tern-port
+
+data
