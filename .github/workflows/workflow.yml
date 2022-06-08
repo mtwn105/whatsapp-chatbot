@@ -23,8 +23,21 @@ jobs:
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_WHATSAPP_CONNECTOR_REPOSITORY }}:${{ github.sha }}
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_CHATBOT_REPOSITORY }}:latest
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_WHATSAPP_CONNECTOR_REPOSITORY }}:latest
-  deploy:
+  artifacts:
     needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Copy Nginx Conf
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.LINODE_SERVER_HOST }}
+          username: ${{ secrets.LINODE_SERVER_USERNAME }}
+          key: ${{ secrets.LINODE_SSH_KEY }}
+          source: "nginx/nginx.conf"
+          target: "nginx"
+          overwrite: true
+  deploy:
+    needs: [build, artifacts]
     runs-on: ubuntu-latest
     steps:
       - name: Docker Compose Up
