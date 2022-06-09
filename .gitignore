@@ -209,3 +209,5 @@ chatbot/.dynamodb/
 chatbot/.tern-port
 
 data
+
+docker-compose-local-env.yml

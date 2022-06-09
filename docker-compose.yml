@@ -1,8 +1,7 @@
 version: "3.9"
 services:
   whatsapp-connector:
-    build:
-      context: ./whatsapp-connector/
+    image: mtwn105/whatsapp-connector:latest
     command: npm run start
     environment:
       - VERIFY_TOKEN=%VERIFY_TOKEN%
@@ -11,8 +10,7 @@ services:
       - CHATBOT_URL=%CHATBOT_URL%
       - PORT=8081
   chatbot:
-    build:
-      context: ./chatbot/
+    image: mtwn105/whatsapp-chatbot:latest
     command: npm run start
     environment:
       - OPENAI_API_KEY=%OPENAI_API_KEY%
