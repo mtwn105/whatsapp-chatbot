@@ -109,7 +109,7 @@ app.post("/api/webhook", async (req, res) => {
                   } catch (whatsappSendError) {
                     console.error(
                       "Error while sending message to whatsapp: " +
-                        whatsappSendError
+                        JSON.stringify(whatsappSendError.response.data)
                     );
                   }
                 }
