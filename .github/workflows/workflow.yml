@@ -31,18 +31,18 @@ jobs:
         uses: actions/checkout@v3
       - name: Docker Compose Edit
         run: |
-          sed -i "s+%VERIFY_TOKEN%+${{ secrets.VERIFY_TOKEN }}+g" docker-compose.yml
-          sed -i "s+%WHATSAPP_TOKEN%+${{ secrets.WHATSAPP_TOKEN }}+g" docker-compose.yml
-          sed -i "s+%WHATSAPP_SEND_MESSAGE_API%+${{ secrets.WHATSAPP_SEND_MESSAGE_API }}+g" docker-compose.yml
-          sed -i "s+%CHATBOT_URL%+${{ secrets.CHATBOT_URL }}+g" docker-compose.yml
-          sed -i "s+%OPENAI_API_KEY%+${{ secrets.OPENAI_API_KEY }}+g" docker-compose.yml
+          sed -i "s+%VERIFY_TOKEN%+${{ secrets.VERIFY_TOKEN }}+g" docker/docker-compose.yml
+          sed -i "s+%WHATSAPP_TOKEN%+${{ secrets.WHATSAPP_TOKEN }}+g" docker/docker-compose.yml
+          sed -i "s+%WHATSAPP_SEND_MESSAGE_API%+${{ secrets.WHATSAPP_SEND_MESSAGE_API }}+g" docker/docker-compose.yml
+          sed -i "s+%CHATBOT_URL%+${{ secrets.CHATBOT_URL }}+g" docker/docker-compose.yml
+          sed -i "s+%OPENAI_API_KEY%+${{ secrets.OPENAI_API_KEY }}+g" docker/docker-compose.yml
       - name: Copy Docker Compose
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.LINODE_SERVER_HOST }}
           username: ${{ secrets.LINODE_SERVER_USERNAME }}
           key: ${{ secrets.LINODE_SSH_KEY }}
-          source: "docker-compose.yml"
+          source: "docker/docker-compose.yml"
           target: "~"
           overwrite: true
       - name: Copy Nginx Conf
