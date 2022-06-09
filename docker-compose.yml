@@ -5,18 +5,18 @@ services:
       context: ./whatsapp-connector/
     command: npm run start
     environment:
-      VERIFY_TOKEN: VERIFY_TOKEN
-      WHATSAPP_TOKEN: VERIFY_TOKEN
-      WHATSAPP_SEND_MESSAGE_API: WHATSAPP_SEND_MESSAGE_API
-      CHATBOT_URL: http://chatbot:8080/api/message
-      PORT: 8081
+      - VERIFY_TOKEN=${VERIFY_TOKEN}
+      - WHATSAPP_TOKEN=${WHATSAPP_TOKEN}
+      - WHATSAPP_SEND_MESSAGE_API=${WHATSAPP_SEND_MESSAGE_API}
+      - CHATBOT_URL=${CHATBOT_URL}
+      - PORT=8081
   chatbot:
     build:
       context: ./chatbot/
     command: npm run start
     environment:
-      OPENAI_API_KEY: OPENAI_API_KEY
-      PORT: 8080
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - PORT=8080
   nginx:
     image: nginx:latest
     command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
