@@ -16,7 +16,8 @@
     "express": "^4.18.1",
     "helmet": "^5.1.0",
     "morgan": "^1.10.0",
-    "openai": "^2.0.5"
+    "openai": "^2.0.5",
+    "redis": "^4.1.0"
   },
   "devDependencies": {
     "eslint": "^8.17.0",
