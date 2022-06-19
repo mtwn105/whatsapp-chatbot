@@ -64,6 +64,7 @@ app.post("/api/webhook", async (req, res) => {
                       process.env.CHATBOT_URL,
                       {
                         message: text,
+                        waid: waid,
                       },
                       {
                         headers: {
@@ -97,7 +98,7 @@ app.post("/api/webhook", async (req, res) => {
                         type: "text",
                         text: {
                           preview_url: false,
-                          body: reply,
+                          body: reply + "\n *_Powered by Linode_*",
                         },
                       },
                       {
