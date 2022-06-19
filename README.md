@@ -6,7 +6,6 @@
 
 ## Demo
 
-Link to chat with the live bot [https://wa.me/message/3LBEVE5J7IR3D1](https://wa.me/message/3LBEVE5J7IR3D1)
 
 ## Tech Stack
 
