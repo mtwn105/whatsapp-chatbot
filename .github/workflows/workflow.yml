@@ -52,7 +52,7 @@ jobs:
           username: ${{ secrets.LINODE_SERVER_USERNAME }}
           key: ${{ secrets.LINODE_SSH_KEY }}
           source: "nginx/nginx.conf"
-          target: "~/nginx"
+          target: "~/docker/nginx"
           overwrite: true
   deploy:
     needs: [build, artifacts]

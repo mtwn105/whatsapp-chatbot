@@ -10,6 +10,7 @@ services:
       - WHATSAPP_SEND_MESSAGE_API=%WHATSAPP_SEND_MESSAGE_API%
       - CHATBOT_URL=%CHATBOT_URL%
       - PORT=8081
+      - ES_HOST=http://elasticsearch:9200
   chatbot:
     image: mtwn105/whatsapp-chatbot:latest
     pull_policy: always
@@ -37,3 +38,14 @@ services:
     volumes:
       - ./data/certbot/conf:/etc/letsencrypt
       - ./data/certbot/www:/var/www/certbot
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.2.3
+    volumes:
+      - ./data/elasticsearch:/usr/share/elasticsearch/data
+    environment:
+      - xpack.security.enabled=false
+      - discovery.type=single-node
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.2.3
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
