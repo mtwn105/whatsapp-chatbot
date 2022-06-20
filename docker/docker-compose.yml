@@ -1,6 +1,9 @@
 version: "3.9"
 services:
   whatsapp-connector:
+    depends_on:
+      - elasticsearch
+      - chatbot
     image: mtwn105/whatsapp-connector:latest
     pull_policy: always
     command: npm run start
