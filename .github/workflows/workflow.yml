@@ -65,4 +65,4 @@ jobs:
           username: ${{ secrets.LINODE_SERVER_USERNAME }}
           key: ${{ secrets.LINODE_SSH_KEY }}
           script: |
-            docker-compose up -d --build --force-recreate --remove-orphans
+            docker-compose up -f docker/docker-compose.yml -d --build --force-recreate --remove-orphans
