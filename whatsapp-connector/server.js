@@ -3,6 +3,7 @@ const morgan = require("morgan");
 const helmet = require("helmet");
 const cors = require("cors");
 const axios = require("axios").default;
+const { Client } = require("elasticsearch");
 
 require("dotenv").config();
 
@@ -12,6 +13,18 @@ app.use(morgan("dev"));
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
+
+const client = new Client({
+  host: process.env.ES_HOST,
+});
+
+client.ping(function (error) {
+  if (error) {
+    console.error("Elasticsearch cluster is down!");
+  } else {
+    console.log("Elasticsearch is connected");
+  }
+});
 
 // Accepts POST requests at /webhook endpoint
 app.post("/api/webhook", async (req, res) => {
@@ -57,6 +70,23 @@ app.post("/api/webhook", async (req, res) => {
                     "Message from " + waid + " - " + userName + ": " + text
                   );
 
+                  try {
+                    client.index({
+                      index: "messages",
+                      body: {
+                        type: "USER",
+                        phonenumber: waid,
+                        text: text,
+                        userName: userName,
+                        timestamp: new Date(),
+                      },
+                    });
+                  } catch (error) {
+                    console.error(
+                      "Error while indexing message to Elasticsearch: " + error
+                    );
+                  }
+
                   let reply = "";
 
                   try {
@@ -88,6 +118,8 @@ app.post("/api/webhook", async (req, res) => {
 
                   // Send reply to user
 
+                  reply = reply + "\n *_Powered by Linode_*";
+
                   try {
                     await axios.post(
                       process.env.WHATSAPP_SEND_MESSAGE_API,
@@ -98,7 +130,7 @@ app.post("/api/webhook", async (req, res) => {
                         type: "text",
                         text: {
                           preview_url: false,
-                          body: reply + "\n *_Powered by Linode_*",
+                          body: reply,
                         },
                       },
                       {
@@ -107,6 +139,23 @@ app.post("/api/webhook", async (req, res) => {
                         },
                       }
                     );
+                    try {
+                      client.index({
+                        index: "messages",
+                        body: {
+                          type: "BOT",
+                          phonenumber: waid,
+                          text: reply,
+                          userName: userName,
+                          timestamp: new Date(),
+                        },
+                      });
+                    } catch (error) {
+                      console.error(
+                        "Error while indexing message to Elasticsearch: " +
+                          error
+                      );
+                    }
                   } catch (whatsappSendError) {
                     console.error(
                       "Error while sending message to whatsapp: " +

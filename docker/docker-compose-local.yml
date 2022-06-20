@@ -10,6 +10,7 @@ services:
       - WHATSAPP_SEND_MESSAGE_API=%WHATSAPP_SEND_MESSAGE_API%
       - CHATBOT_URL=%CHATBOT_URL%
       - PORT=8081
+      - ES_HOST=http://elasticsearch:9200
     ports:
       - 8081:8081
   chatbot:
@@ -27,3 +28,18 @@ services:
     command: redis-server
     ports:
       - "6379:6379"
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.2.3
+    volumes:
+      - ../data/elasticsearch:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+    environment:
+      - xpack.security.enabled=false
+      - discovery.type=single-node
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.2.3
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
