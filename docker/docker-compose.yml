@@ -19,8 +19,6 @@ services:
   redis:
     image: redis:latest
     command: redis-server
-    ports:
-      - "6379:6379"
   nginx:
     image: nginx:latest
     command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
