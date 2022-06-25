@@ -66,12 +66,33 @@ app.post("/api/webhook", async (req, res) => {
                 ) {
                   const waid = message.from;
                   const text = message.text.body;
+                  const msgId = message.id;
                   console.log(
                     "Message from " + waid + " - " + userName + ": " + text
                   );
 
                   try {
-                    client.index({
+                    await axios.post(
+                      process.env.WHATSAPP_SEND_MESSAGE_API,
+                      {
+                        messaging_product: "whatsapp",
+                        status: "read",
+                        message_id: msgId,
+                      },
+                      {
+                        headers: {
+                          Authorization: "Bearer " + process.env.WHATSAPP_TOKEN,
+                        },
+                      }
+                    );
+                  } catch (error) {
+                    console.error(
+                      "Error while sending status message to whatsapp: " + error
+                    );
+                  }
+
+                  try {
+                    await client.index({
                       index: "messages",
                       body: {
                         type: "USER",
@@ -111,7 +132,7 @@ app.post("/api/webhook", async (req, res) => {
                     );
 
                     reply =
-                      "Sorry, I am not able to reply to your message right now. Please try again later.";
+                      "Sorry, I am not able to reply to your message right now. Please try again later.\n";
                   }
 
                   console.log("Replying to " + waid + ": " + reply);
@@ -140,7 +161,7 @@ app.post("/api/webhook", async (req, res) => {
                       }
                     );
                     try {
-                      client.index({
+                      await client.index({
                         index: "messages",
                         body: {
                           type: "BOT",
