@@ -2,10 +2,11 @@ version: "3.9"
 services:
   whatsapp-connector:
     depends_on:
-      - elasticsearch
-      - chatbot
+      - "chatbot"
     image: mtwn105/whatsapp-connector:latest
     pull_policy: always
+    ports:
+      - "8081:8081"
     command: npm run start
     environment:
       - VERIFY_TOKEN=%VERIFY_TOKEN%
@@ -13,8 +14,11 @@ services:
       - WHATSAPP_SEND_MESSAGE_API=%WHATSAPP_SEND_MESSAGE_API%
       - CHATBOT_URL=%CHATBOT_URL%
       - PORT=8081
-      - ES_HOST=http://elasticsearch:9200
+      - ES_HOST=http://localhost:9200
+    network_mode: host
   chatbot:
+    depends_on:
+      - "redis"
     image: mtwn105/whatsapp-chatbot:latest
     pull_policy: always
     command: npm run start
@@ -26,15 +30,21 @@ services:
     image: redis:latest
     command: redis-server
   nginx:
+    depends_on:
+      - "whatsapp-connector"
+      - "chatbot"
+      - "redis"
     image: nginx:latest
     command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
     volumes:
       - ./nginx/:/etc/nginx/conf.d
       - ./data/certbot/conf:/etc/letsencrypt
       - ./data/certbot/www:/var/www/certbot
+      - ./ek/:/ek
     ports:
       - "80:80"
       - "443:443"
+    network_mode: host
   certbot:
     image: certbot/certbot
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
