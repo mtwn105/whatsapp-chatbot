@@ -66,5 +66,5 @@ jobs:
           key: ${{ secrets.LINODE_SSH_KEY }}
           script: |
             docker-compose -f docker/docker-compose.yml up -d --build --force-recreate --remove-orphans
-            timeout 300 bash -c 'while [[ "$(curl --insecure -s -o /dev/null -w ''%{http_code}'' http://localhost:8081)" != "200" ]]; do sleep 5; done'
+            timeout 300 bash -c 'while [[ "$(curl --insecure -s -o /dev/null -w ''%{http_code}'' http://localhost:8081)" != "404" ]]; do sleep 5; done'
             docker-compose -f docker/docker-compose.yml up -d nginx --build --force-recreate
