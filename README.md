@@ -1,4 +1,4 @@
-# ✉️ WhatsApp AI Chatbot
+# 🐱 Winnie - WhatsApp AI Chatbot
 
 ## 🤖 AI Powered Chatbot using GPT-3
 
