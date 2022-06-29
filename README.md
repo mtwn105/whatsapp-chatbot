@@ -1,81 +1,90 @@
-# WhatsApp AI Chatbot
+# ✉️ WhatsApp AI Chatbot
 
-## AI Powered Chatbot using GPT-3
+## 🤖 AI Powered Chatbot using GPT-3
 
 **_Chat on WhatsApp with an AI_**
 
 ## Demo
 
 
-## Tech Stack
+## 🔨 Tech Stack
 
 **Server:** Node.JS, Express
 
+**Database:** Redis
+
 **API:** WhatsApp Business Cloud API, OpenAI GPT-3
 
-## Installation
+**Deployment:** Docker, Nginx, Linode
 
-- **Install Dependencies**
+**Misc:** ElasticSearch, Kibana
 
-```bash
-  npm install
-```
+## ⚙️ Project Structure
 
-or
+**whatsapp-connector:** Whatsapp connector is a microservice which connects a bot to WhatsApp API, handles messaging and incoming requests from WhatsApp
 
-```bash
-  yarn add
-```
+**chatbot:** Chatbot is a microservice which will connect to OpenAI GPT-3 model to answer user queries based on prompt
 
-- **Update Environment Variables**
+## 🏃‍♂️ Running Application
 
-  - Create `.env` file by copying `.env.sample`
-  - Fill necessary values
-    `VERIFY_TOKEN`, `OPENAI_API_KEY`, `WHATSAPP_TOKEN`, `WHATSAPP_SEND_MESSAGE_API`
+- ### Run the application using `docker-compose`
 
-    - `VERIFY_TOKEN` - Verify Token for WhatsApp Webhook
-    - `OPENAI_API_KEY` - OpenAI API Key
-    - `WHATSAPP_TOKEN` - WhatsApp Business Permanent/Temporary Authentication Token with `whatsapp_business_messaging` permission
-    - `WHATSAPP_SEND_MESSAGE_API` - WhatsApp Cloud API Send Message API End Point with Phone Number ID
+  - **Update Environment Variables**
 
-- **Run the Server**
+    - Fill necessary values in `docker-compose-local.yml` file inside `docker` folder for below environment variables:
+      - `VERIFY_TOKEN` - Verify Token for WhatsApp Webhook
+      - `OPENAI_API_KEY` - OpenAI API Key
+      - `WHATSAPP_TOKEN` - WhatsApp Business Permanent/Temporary Authentication Token with `whatsapp_business_messaging` permission
+      - `WHATSAPP_SEND_MESSAGE_API` - WhatsApp Cloud API Send Message API End Point with Phone Number ID
+      - `CHATBOT_URL` - Chatbot microservice api url
 
-```bash
-    npm run start
-```
+  - Run command `docker-compose -f docker-compose.local.yml up -d` inside `docker` folder
 
-- **Deployment**
+- ### Run using `npm`
 
-  Deploy with Docker easily using the `Dockerfile` provided or the `docker-compose.yml`
+  - **Install Dependencies**
 
-## Configuration
+  Navigate to `whatsapp-connector` and `chatbot` to install their dependecies.
 
-**Detailed Guide is available on my blog [here](https://blog.amitwani.dev)**
+  ```bash
+    npm install
+  ```
 
-Multiple Prequisites and Configuration needs to be done.
+  or
 
-### Prequisites
+  ```bash
+    yarn add
+  ```
 
-- A Meta developer account
-- A Meta Business account
+  - **Update Environment Variables**
 
-### Steps
+    - Create `.env` file by copying `.env.sample` in both microservices
+    - Fill necessary values for below environment variables:
+      - `VERIFY_TOKEN` - Verify Token for WhatsApp Webhook
+      - `OPENAI_API_KEY` - OpenAI API Key
+      - `WHATSAPP_TOKEN` - WhatsApp Business Permanent/Temporary Authentication Token with `whatsapp_business_messaging` permission
+      - `WHATSAPP_SEND_MESSAGE_API` - WhatsApp Cloud API Send Message API End Point with Phone Number ID
+      - `CHATBOT_URL` - Chatbot microservice api url
 
-- Create an app in Meta Developer Console
-- Link the app and the Meta Business Account
-- Add WhatsApp Integration to your app
-- Add a Phone Number and Get the Phone Number ID
-- Generate a Permanent Authentication Token from Meta Business Settings
-- Configure the Webhook and Verify Token
+  - **Run the Server**
+
+  ```bash
+      npm run start
+  ```
+
+## 🛳️ Deployment
+
+Deploy with Docker easily using the `Dockerfile` provided in the respective services folder or the `docker-compose.yml` in the `docker` folder
+
+## 🥣 Meta Configuration
+
+Multiple prerequisites and configuration needs to be done on the Meta Developers, please follow my below guide for details:
+**[https://blog.amitwani.dev/create-a-chatbot-using-whatsapp-cloud-api](https://blog.amitwani.dev/create-a-chatbot-using-whatsapp-cloud-api)**
 
 ## Acknowledgements
 
 - [Linode](https://linode.com)
 - [Hashnode](https://hashnode.com)
-
-## License
-
-[MIT](https://choosealicense.com/licenses/mit/)
 
 ## Feedback
 
