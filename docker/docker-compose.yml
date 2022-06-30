@@ -43,7 +43,7 @@ services:
       - ./data/certbot/conf:/etc/letsencrypt
       - ./data/certbot/www:/var/www/certbot
       - ./ek/:/ek
-      - ./landing-page:/usr/share/nginx/html
+      - ./landing-page:/etc/nginx/html
     ports:
       - "80:80"
       - "443:443"

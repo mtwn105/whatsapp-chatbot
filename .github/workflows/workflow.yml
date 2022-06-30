@@ -61,7 +61,7 @@ jobs:
           username: ${{ secrets.LINODE_SERVER_USERNAME }}
           key: ${{ secrets.LINODE_SSH_KEY }}
           source: "landing-page/"
-          target: "~"
+          target: "~/docker"
           overwrite: true
   deploy:
     needs: [build, artifacts]
