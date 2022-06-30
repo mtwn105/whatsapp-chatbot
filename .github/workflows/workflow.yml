@@ -54,6 +54,15 @@ jobs:
           source: "nginx/nginx.conf"
           target: "~/docker"
           overwrite: true
+      - name: Copy Frontend
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.LINODE_SERVER_HOST }}
+          username: ${{ secrets.LINODE_SERVER_USERNAME }}
+          key: ${{ secrets.LINODE_SSH_KEY }}
+          source: "landing-page/"
+          target: "~"
+          overwrite: true
   deploy:
     needs: [build, artifacts]
     runs-on: ubuntu-latest
